@@ -1,0 +1,18 @@
+<body>
+<main class="mx-auto grid max-w-7xl grid-cols-1 gap-4 px-4 py-8 sm:grid-cols-2 xl:grid-cols-4">
+    {{#each products}}
+  <article class="overflow-hidden border border-gray-200 bg-white shadow-sm">
+    <img src="/images/product-images/{{this.image}}" alt="{{this.name}}">
+    <div class="p-6">
+      <h2 class="mb-3 text-xl font-semibold text-gray-900">{{this.name}}</h2>
+
+      <h4 class="mb-3 text-l font-semibold text-green-700">Rs.{{this.price}}</h4>
+      <h4 class="mb-3 text-l font-semibold text-gray-700">{{this.category}}</h4>
+      <p class="mb-5 text-base leading-6 text-gray-700">{{this.description}}</p>
+      <button onclick="addToCart('{{this._id}}')" class="inline-block rounded bg-blue-600 px-4 py-2 text-white no-underline hover:bg-blue-700 focus:outline-2 focus:outline-offset-2 focus:outline-blue-600">Add to Cart</button>
+    </div>
+  </article>
+  {{/each}}
+  </main>
+  </body>
+

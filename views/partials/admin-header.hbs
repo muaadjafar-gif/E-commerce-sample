@@ -1,0 +1,21 @@
+    <nav class="flex flex-col items-stretch gap-3 bg-gray-100 px-4 py-3 sm:px-6 md:flex-row md:items-center" aria-label="Main navigation">
+  <a href="/admin" class="text-2xl font-normal text-gray-900 no-underline md:mr-4 lg:mr-7">Admin Panel</a>
+  <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-lg">
+    <a href="/admin" class="text-gray-800 no-underline">All Products</a>
+    <a href="#" class="text-gray-500 no-underline">All Orders</a>
+    <a href="#" class="text-gray-500 no-underline">All Users</a>
+  </div>
+  <form class="flex w-full min-w-0 items-center gap-2 md:ml-auto md:w-auto md:flex-1 md:justify-end lg:flex-none" role="search">
+    <input
+      type="search"
+      placeholder="Search"
+      aria-label="Search"
+      class="min-w-0 flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-base text-gray-800 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 md:max-w-64 lg:w-56 lg:flex-none"
+    >
+    {{#if adminLoggedIn}}
+      <a href="/adminlogout" class="shrink-0 rounded-md border border-green-600 px-4 py-2 text-base text-green-700 hover:bg-green-600 hover:text-white">Logout</a>
+    {{else}}
+      <a href="/adminlogin" class="shrink-0 rounded-md border border-green-600 px-4 py-2 text-base text-green-700 hover:bg-green-600 hover:text-white">Login</a>
+    {{/if}}
+  </form>
+</nav>

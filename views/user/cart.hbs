@@ -1,0 +1,73 @@
+<main class="mx-auto max-w-[1280px] px-4 py-8">
+  <div class="w-full overflow-x-auto">
+    {{#if products.length}}
+      <div class="grid min-w-[900px] grid-cols-[1.2fr_2fr_1.2fr_1.5fr_1fr] items-center border-t border-slate-300 py-5 text-2xl font-bold text-slate-900">
+        <div class="pl-1">Item</div>
+        <div class="pl-1">Title</div>
+        <div class="pl-1">Price</div>
+        <div class="pl-1">Quantity</div>
+        <div class="text-right pr-1">Actions</div>
+      </div>
+
+      {{#each products}}
+        <div class="cart-item-row grid min-w-[900px] grid-cols-[1.2fr_2fr_1.2fr_1.5fr_1fr] items-center border-t border-slate-300 py-8" data-price="{{this.price}}">
+          <div class="flex items-center justify-start pl-1">
+            <img
+              src="/images/product-images/{{this.image}}"
+              alt="{{this.name}}"
+              class="h-[88px] w-[120px] rounded-md border border-slate-200 bg-slate-100 object-cover shadow-sm"
+            />
+          </div>
+
+          <div class="text-[1.05rem] font-medium text-slate-900">{{this.name}}</div>
+          <div class="text-[1.05rem] font-medium text-slate-900">Rs.{{this.price}}</div>
+
+          <div class="flex items-center justify-start" aria-label="Quantity controls">
+            <button
+              onclick="changeCartQuantity('{{this._id}}', -1, this)"
+              type="button"
+              aria-label="Decrease quantity"
+              class="flex h-[52px] w-[52px] items-center justify-center rounded-l-lg bg-slate-400 text-3xl font-semibold text-white hover:bg-slate-500"
+            >
+              −
+            </button>
+            <span class="cart-quantity flex h-[52px] w-[54px] items-center justify-center bg-slate-300 text-xl font-medium text-white">
+              {{this.quantity}}
+            </span>
+            <button
+              onclick="changeCartQuantity('{{this._id}}', 1, this)"
+              type="button"
+              aria-label="Increase quantity"
+              class="flex h-[52px] w-[52px] items-center justify-center rounded-r-lg bg-slate-400 text-3xl font-semibold text-white hover:bg-slate-500"
+            >
+              +
+            </button>
+          </div>
+
+          <div class="flex justify-end pr-1">
+            <button
+              onclick="removeFromCart('{{this._id}}', this)"
+              type="button"
+              class="rounded-lg bg-red-500 px-7 py-4 text-xl font-bold text-white shadow-sm transition hover:bg-red-600"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      {{/each}}
+
+      <section class="mt-4 border-t border-slate-300 py-6 text-center" aria-label="Cart total">
+        <p class="mb-5 text-2xl font-semibold text-slate-900">
+          TOTAL: RS. <span id="cart-total">{{totalPrice}}</span>
+        </p>
+        <a href="/place-order"
+          class="min-w-64 rounded-md bg-green-600 px-8 py-3 text-xl font-bold text-white transition hover:bg-green-700 focus:outline-2 focus:outline-offset-2 focus:outline-green-600"
+        >
+          Place Order
+        </a>
+      </section>
+    {{else}}
+      <h2 class="pt-8 text-center text-3xl font-bold text-slate-900">Cart is empty</h2>
+    {{/if}}
+  </div>
+</main>

@@ -1,0 +1,35 @@
+{
+  "name": "e-commerce-app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "css:build": "tailwindcss -i ./public/stylesheets/style.css -o ./public/stylesheets/tailwind.css",
+    "css:watch": "tailwindcss -i ./public/stylesheets/style.css -o ./public/stylesheets/tailwind.css --watch"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^18.0.8",
+    "express": "^4.22.3",
+    "express-fileupload": "^1.5.2",
+    "express-handlebars": "^9.0.2",
+    "express-session": "^1.19.0",
+    "hbs": "^4.3.1",
+    "http-errors": "~1.6.3",
+    "mongodb": "^7.7.0",
+    "morgan": "^1.12.1",
+    "razorpay": "^2.9.8",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "public/*"
+    ]
+  }
+}

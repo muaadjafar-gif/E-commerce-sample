@@ -1,0 +1,149 @@
+<main class="min-h-[calc(100vh-4rem)] bg-white px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+  <form class="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.7fr)_minmax(340px,1fr)] lg:gap-16"
+  action="" id="checkout-form">
+    <section aria-labelledby="delivery-heading">
+      <h1 id="delivery-heading" class="mb-9 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+        Enter Delivery Details
+      </h1>
+
+      <div class="space-y-5">
+        <div>
+          <label for="address" class="mb-2 block text-base font-medium text-slate-800">Address</label>
+          <input
+            id="address"
+            type="text"
+            name="address"
+            autocomplete="street-address"
+            class="h-12 w-full rounded-md border border-slate-300 bg-white px-3 text-base text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+
+        <div>
+          <label for="pincode" class="mb-2 block text-base font-medium text-slate-800">Pincode</label>
+          <input
+            id="pincode"
+            type="text"
+            name="pincode"
+            inputmode="numeric"
+            autocomplete="postal-code"
+            class="h-12 w-full rounded-md border border-slate-300 bg-white px-3 text-base text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+
+        <div>
+          <label for="mobile" class="mb-2 block text-base font-medium text-slate-800">Mobile</label>
+          <input
+            id="mobile"
+            type="tel"
+            name="mobile"
+            autocomplete="tel"
+            class="h-12 w-full rounded-md border border-slate-300 bg-white px-3 text-base text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+        <input type="text" name="userid" value="{{user._id}}" hidden>
+      </div>
+    </section>
+
+    <aside class="h-fit rounded-md border border-slate-400 bg-white p-6 shadow-sm sm:p-8 lg:mt-12" aria-label="Order summary">
+      <h2 class="border-b border-slate-200 pb-5 text-xl font-semibold text-slate-900 sm:text-2xl">
+        Total Amount : Rs.{{totalPrice}}
+      </h2>
+
+      <fieldset class="pt-5">
+        <legend class="mb-5 text-base font-medium text-slate-800">Payment method</legend>
+        <div class="space-y-4">
+          <label class="flex w-fit items-center gap-2 text-base text-slate-800">
+            <input
+              type="radio"
+              name="payment-method"
+              value="COD"
+              checked
+              class="size-5 accent-blue-600"
+            />
+            <span>COD</span>
+          </label>
+          <label class="flex w-fit items-center gap-2 text-base text-slate-800">
+            <input
+              type="radio"
+              name="payment-method"
+              value="Online"
+              class="size-5 accent-blue-600"
+            />
+            <span>Online payment</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="mt-6 flex justify-end">
+        <button
+          type="submit"
+          class="rounded-md bg-blue-600 px-5 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+        >
+          Checkout
+        </button>
+      </div>
+    </aside>
+  </form>
+</main>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  $('#checkout-form').submit((e) => {
+    e.preventDefault()
+    $.ajax({
+      url:'/place-order',
+      method:'post',
+      data:$('#checkout-form').serialize(),
+      success: (response)=>{
+        console.log(response.keyId)
+        if (!response.status) {
+          alert(response.message || 'Could not create your order.')
+          return
+        }
+
+        if (response.paymentMethod === 'COD') {
+          location.href = '/order-success'
+          return
+        }
+
+        const checkout = new Razorpay({
+          key: response.keyId,
+          amount: response.razorpayOrder.amount,
+          currency: response.razorpayOrder.currency,
+          name: 'E-Commerce Store',
+          description: 'Order payment',
+          order_id: response.razorpayOrder.id,
+          prefill: response.prefill,
+          handler: (paymentResponse) => {
+            $.ajax({
+              url: '/verify-payment',
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify(paymentResponse),
+              success: (verificationResponse) => {
+                if (verificationResponse.status) {
+                  location.href = '/order-success'
+                } else {
+                  alert(verificationResponse.message || 'Payment verification failed.')
+                }
+              },
+              error: (xhr) => {
+                alert(xhr.responseJSON?.message || 'Could not verify payment.')
+              }
+            })
+          },
+          modal: {
+            ondismiss: () => alert('Payment was not completed. Your order is still pending.')
+          }
+        })
+
+        checkout.on('payment.failed', (event) => {
+          alert(event.error.description || 'Payment failed. Please try again.')
+        })
+        checkout.open()
+      },
+      error: (xhr) => {
+        alert(xhr.responseJSON?.message || 'Could not create your order.')
+      }
+    })
+  })
+</script>

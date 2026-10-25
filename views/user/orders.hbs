@@ -1,0 +1,68 @@
+<main class="min-h-[calc(100vh-4rem)] bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-4xl">
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-widest text-blue-600">Your account</p>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Your orders</h1>
+        <p class="mt-2 text-base text-slate-600">View your recent purchases and order details.</p>
+      </div>
+      <a href="/" class="inline-flex w-fit items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+        Continue shopping
+      </a>
+    </div>
+
+    {{#if orders.length}}
+      <div class="space-y-5">
+        {{#each orders}}
+          <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            <header class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4 sm:px-6">
+              <div>
+                <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Ordered</p>
+                <p class="mt-1 font-semibold text-slate-900">{{this.displayDate}}</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium capitalize text-blue-800">{{this.status}}</span>
+                <span class="text-sm text-slate-600">{{this.paymentMethod}}</span>
+              </div>
+            </header>
+
+            <div class="divide-y divide-slate-100 px-5 sm:px-6">
+              {{#each this.products}}
+                <div class="flex items-center gap-4 py-4">
+                  <img
+                    src="/images/product-images/{{this.image}}"
+                    alt="{{this.name}}"
+                    class="size-16 shrink-0 rounded-lg border border-slate-200 bg-slate-100 object-cover"
+                  />
+                  <div class="min-w-0 flex-1">
+                    <h2 class="truncate font-medium text-slate-900">{{this.name}}</h2>
+                    <p class="mt-1 text-sm text-slate-500">Quantity: {{this.quantity}}</p>
+                  </div>
+                  <p class="shrink-0 text-sm font-semibold text-slate-900">Rs.{{this.price}}</p>
+                </div>
+              {{/each}}
+            </div>
+
+            <footer class="flex items-center justify-between border-t border-slate-200 px-5 py-4 sm:px-6">
+              <span class="text-sm font-medium text-slate-600">Order total</span>
+              <span class="text-lg font-bold text-slate-900">Rs.{{this.total}}</span>
+            </footer>
+          </article>
+        {{/each}}
+      </div>
+    {{else}}
+      <section class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+        <div class="mx-auto flex size-14 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+          <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6M10 21h.01M18 21h.01" />
+          </svg>
+        </div>
+        <h2 class="mt-4 text-xl font-semibold text-slate-900">No orders yet</h2>
+        <p class="mt-2 text-sm text-slate-600">Your placed orders will show up here.</p>
+        <a href="/" class="mt-6 inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+          Start shopping
+        </a>
+      </section>
+    {{/if}}
+  </div>
+</main>
