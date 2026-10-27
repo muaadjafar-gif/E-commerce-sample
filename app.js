@@ -12,6 +12,7 @@ const fileUpload = require('express-fileupload');
 const session = require('express-session')
 const imageStorage = require('./helpers/image-storage')
 var app = express();
+app.set('trust proxy', 1);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -41,7 +42,13 @@ const sessionSecret = process.env.SESSION_SECRET
 if (process.env.NODE_ENV === 'production' && !sessionSecret) {
   throw new Error('SESSION_SECRET must be configured in production.')
 }
-app.use(session({secret: sessionSecret || 'Key',cookie:{maxAge:100000}}))
+app.use(session({
+  secret: sessionSecret || 'Key',
+  cookie: {
+    maxAge: 100000,
+    secure: process.env.NODE_ENV === 'production'
+  }
+}))
 
 app.use('/', userRouter);
 app.use('/admin', adminRouter);
