@@ -17,6 +17,10 @@ const createRazorpayClient = () => {
   return new Razorpay({ key_id, key_secret });
 };
 
+const isRazorpayConfigured = () => Boolean(
+  collection.RAZORPAY_KEY_ID && collection.RAZORPAY_KEY_SECRET
+);
+
 module.exports={
     doSignup: async (userData) => {
   const hashedPassword = await bcrypt.hash(userData.password, 10);
@@ -226,12 +230,24 @@ module.exports={
     return result.insertedId.toString();
   },
   generateRazorpay: async (total, receipt) => {
+    const amount = Math.round(Number(total) * 100);
+    if (!Number.isSafeInteger(amount) || amount <= 0) {
+      throw new Error('Razorpay order amount must be a positive, safe integer in paise.');
+    }
+
     return createRazorpayClient().orders.create({
-      amount: Math.round(Number(total) * 100),
+      amount,
       currency: 'INR',
       receipt: String(receipt)
     });
   },
+  isRazorpayConfigured,
+  markOrderPaymentFailed: async (orderId) => db.get()
+    .collection(collection.ORDER_COLLECTION)
+    .updateOne(
+      { _id: new ObjectId(orderId), paymentMethod: 'Online', status: 'pending' },
+      { $set: { status: 'payment_failed', paymentStatus: 'failed' } }
+    ),
   saveRazorpayOrderId: async (orderId, razorpayOrderId) => {
     return db.get().collection(collection.ORDER_COLLECTION).updateOne(
       { _id: new ObjectId(orderId) },
@@ -240,7 +256,7 @@ module.exports={
   },
   verifyRazorpayPayment: async (payment, userId) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = payment;
-    const keySecret = 'sUihaib21y7pz8iSmtzFtwrT' ;
+    const keySecret = collection.RAZORPAY_KEY_SECRET;
 
     if (!keySecret || !razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return false;

@@ -13,38 +13,25 @@ module.exports={
             resolve(products)
         })
     },
-    deleteProduct:(proId)=>{
-        return new Promise((resolve,reject)=>{
-            db.get().collection(collection.PRODUCT_COLLECTION).deleteOne({_id:new objectId(proId)}).then((response)=>{
-                console.log(response);
-                resolve(response)
-                
-            })
-        })
-    },
-    getProductDetails:(proId)=>{
-        return new Promise((resolve,reject)=>{
-            db.get().collection(collection.PRODUCT_COLLECTION).findOne({_id:new objectId(proId)}).then((product)=>{
-                resolve(product)
+    deleteProduct: (proId) => db.get()
+        .collection(collection.PRODUCT_COLLECTION)
+        .deleteOne({ _id: new objectId(proId) }),
+    getProductDetails: (proId) => db.get()
+        .collection(collection.PRODUCT_COLLECTION)
+        .findOne({ _id: new objectId(proId) }),
 
-            })
+    updateProduct: (proId, proDetails) => db.get()
+        .collection(collection.PRODUCT_COLLECTION)
+        .updateOne({ _id: new objectId(proId) }, {
+            $set: {
+                name: proDetails.name,
+                category: proDetails.category,
+                price: proDetails.price,
+                description: proDetails.description,
+                ...(proDetails.image ? {
+                    image: proDetails.image,
+                    imagePublicId: proDetails.imagePublicId
+                } : {})
+            }
         })
-
-    },
-
-    updateProduct:(proId,proDetails)=>{
-        return new Promise((resolve,reject)=>{
-            db.get().collection(collection.PRODUCT_COLLECTION).updateOne({_id: new objectId(proId)},{
-                $set:{
-                    name:proDetails.name,
-                    category:proDetails.category,
-                    price:proDetails.price,
-                    description:proDetails.description,
-                    ...(proDetails.image ? { image: proDetails.image } : {})
-                }
-            }).then((response)=>{
-                resolve()
-            })
-        })
-    }
 }

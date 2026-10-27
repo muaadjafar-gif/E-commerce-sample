@@ -131,6 +131,7 @@ router.get('/cart', verifyLoggin, async (req, res, next) => {
 })
 
 router.post('/place-order', verifyLoggin, async (req, res, next) => {
+  let orderId
   try {
     const userId = req.session.user._id;
     const paymentMethod = req.body['payment-method'];
@@ -144,25 +145,57 @@ router.post('/place-order', verifyLoggin, async (req, res, next) => {
       return res.status(400).json({ status: false, message: 'Your cart is empty.' });
     }
 
+    if (paymentMethod === 'Online' && !userHelpers.isRazorpayConfigured()) {
+      console.error('Online checkout requested, but Razorpay credentials are not configured.')
+      return res.status(503).json({
+        status: false,
+        message: 'Online payments are not configured. Please contact the store administrator.'
+      });
+    }
+
     const totalPrice = calculateCartTotal(products);
-    const orderId = await userHelpers.placeOrder(req.body, products, totalPrice, userId);
+    orderId = await userHelpers.placeOrder(req.body, products, totalPrice, userId);
 
     if (paymentMethod === 'COD') {
       return res.json({ status: true, paymentMethod });
     }
 
-    const razorpayOrder = await userHelpers.generateRazorpay(totalPrice, orderId);
-    await userHelpers.saveRazorpayOrderId(orderId, razorpayOrder.id);
+    try {
+      const razorpayOrder = await userHelpers.generateRazorpay(totalPrice, orderId);
+      await userHelpers.saveRazorpayOrderId(orderId, razorpayOrder.id);
 
-    res.json({
-      status: true,
-      paymentMethod,
-      keyId: collection.RAZORPAY_KEY_ID,
-      razorpayOrder,
-      prefill: { email: req.session.user.email }
-    });
+      return res.json({
+        status: true,
+        paymentMethod,
+        keyId: collection.RAZORPAY_KEY_ID,
+        razorpayOrder,
+        prefill: { email: req.session.user.email }
+      });
+    } catch (error) {
+      console.error('Razorpay order creation failed:', {
+        message: error.message,
+        statusCode: error.statusCode,
+        code: error.error && error.error.code,
+        description: error.error && error.error.description
+      });
+
+      try {
+        await userHelpers.markOrderPaymentFailed(orderId);
+      } catch (updateError) {
+        console.error('Failed to mark the unpayable checkout order as failed:', updateError.message);
+      }
+
+      return res.status(502).json({
+        status: false,
+        message: 'Could not start online payment. No payment was taken. Please try again.'
+      });
+    }
   } catch (error) {
-    next(error);
+    console.error('Checkout order creation failed:', error.message);
+    return res.status(500).json({
+      status: false,
+      message: 'Could not create your order. Please try again.'
+    });
   }
 });
 

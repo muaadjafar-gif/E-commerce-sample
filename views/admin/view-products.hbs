@@ -52,7 +52,7 @@
               <td class="border border-gray-200 px-4 py-3 text-gray-700">{{this.category}}</td>
               <td class="border border-gray-200 px-4 py-3 text-gray-700">{{this.description}}</td>
               <td class="border border-gray-200 px-4 py-3">
-                <img class="rounded-md" src="/images/product-images/{{this.image}}" alt="{{this.name}}" width="48" height="48" loading="lazy">
+                <img class="rounded-md" src="{{imageUrl this.image}}" alt="{{this.name}}" width="48" height="48" loading="lazy">
               </td>
               <td>
                 <a href="/admin/edit-product/{{this._id}}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Edit</a>

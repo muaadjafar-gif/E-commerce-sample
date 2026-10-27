@@ -10,6 +10,7 @@ var adminRouter = require('./routes/admin');
 var { engine } = require('express-handlebars');
 const fileUpload = require('express-fileupload');
 const session = require('express-session')
+const imageStorage = require('./helpers/image-storage')
 var app = express();
 
 // view engine setup
@@ -20,7 +21,10 @@ app.engine('hbs', engine({
   extname: '.hbs',
   defaultLayout: 'layout',
   layoutsDir: path.join(__dirname, 'views', 'layout'),
-  partialsDir: path.join(__dirname, 'views', 'partials')
+  partialsDir: path.join(__dirname, 'views', 'partials'),
+  helpers: {
+    imageUrl: imageStorage.imageUrl
+  }
 }));
 app.set('view engine', 'hbs');
 app.use(logger('dev'));
@@ -28,7 +32,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(fileUpload())
+app.use(fileUpload({
+  limits: { fileSize: 10 * 1024 * 1024 },
+  abortOnLimit: true,
+  responseOnLimit: 'Product images must be 10 MB or smaller.'
+}))
 const sessionSecret = process.env.SESSION_SECRET
 if (process.env.NODE_ENV === 'production' && !sessionSecret) {
   throw new Error('SESSION_SECRET must be configured in production.')

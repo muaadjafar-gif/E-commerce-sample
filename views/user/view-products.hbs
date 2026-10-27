@@ -2,7 +2,7 @@
 <main class="mx-auto grid max-w-7xl grid-cols-1 gap-4 px-4 py-8 sm:grid-cols-2 xl:grid-cols-4">
     {{#each products}}
   <article class="overflow-hidden border border-gray-200 bg-white shadow-sm">
-    <img src="/images/product-images/{{this.image}}" alt="{{this.name}}">
+    <img src="{{imageUrl this.image}}" alt="{{this.name}}">
     <div class="p-6">
       <h2 class="mb-3 text-xl font-semibold text-gray-900">{{this.name}}</h2>
 
@@ -15,4 +15,3 @@
   {{/each}}
   </main>
   </body>
-
